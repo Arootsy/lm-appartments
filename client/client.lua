@@ -1,5 +1,6 @@
 -- // [ IMPORTS ] \\ --
 
+lib.locale()
 local appClass <const> = require "client.class.appartmentClass"
 
 -- // [ VARIABLES ] \\ --
