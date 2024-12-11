@@ -16,5 +16,4 @@ function Appartments:constructor(appId, owner, name, price, rent, rentTime)
     self.name = name;
     self.price = price;
     self.rent = rent;
-    self.rentTime = rentTime;
 end;

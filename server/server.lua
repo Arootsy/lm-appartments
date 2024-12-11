@@ -10,6 +10,8 @@ local appartmentsFromOwner = {}
 -- // [ SETUP ] \\ --
 
 (function ()
+    while not MySQL do Wait(0) end;
+
     local resp = MySQL.prepare.await("SELECT `id`, `owner`, `name` FROM `appartments`")
     
     if not resp then return end;
