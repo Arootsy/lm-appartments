@@ -4,9 +4,10 @@ use_fxv2_oal "yes"
 lua54 "yes"
 
 name "lm-apparments"
-author "Zweetstreep"
+author "Zweetstreep & Alan"
 version "1.0.0"
 
-client_scripts { "src/client/*.lua" }
-server_scripts { "src/server/*.lua", "@oxmysql/lib/MySQL.lua", "Shared/*.lua" }
-shared_scripts { "@es_extended/imports.lua", "@ox_lib/init.lua" }
+client_scripts { "client/**/*.lua" }
+server_scripts { "server/**/*.lua", "@oxmysql/lib/MySQL.lua" }
+shared_scripts { "@es_extended/imports.lua", "@ox_lib/init.lua", "shared/*.lua" }
+files { "locales/*.json" }

@@ -1,3 +1,10 @@
 {
-
+    "PRESS_E_TO_ENTER": "[E] - Open %s",
+    "ENTER_APPARTMENT": "Enter appartment",
+    "BUY_APPARTMENT_TITLE": "Buy appartment",
+    "BUY_APPARTMENT_DESC": "Buy appartment: %s for €%s,-",
+    "RENT_APPARTMENT_TITLE": "Rent appartment",
+    "RENT_APPARTMENT_DESC": "Rent appartment: %s for €%s,- a day",
+    "NOT_ENOUGH_MONEY": "You don't have enough money! You need €%s,- more.",
+    "BOUGHT_APPARTMENT": "You bought appartment: %s for €%s,-",
 }

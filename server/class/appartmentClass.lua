@@ -2,7 +2,7 @@ local Appartments = lib.class('Appartments');
 
 local db = require 'server.sql.queries';
 
----@field appId number
+---@field id number
 ---@field owner string
 ---@field name string
 ---@field price number
@@ -10,10 +10,18 @@ local db = require 'server.sql.queries';
 ---@field rentTime number
 ---@field rentPrice number
 ---@field renter string
-function Appartments:constructor(appId, owner, name, price, rent, rentTime)
-    self.appId = appId;
+function Appartments:constructor(id, owner, name, price, rent)
+    self.id = id;
     self.owner = owner;
     self.name = name;
     self.price = price;
     self.rent = rent;
 end;
+
+function Appartments:buy(owner)
+    db.addAppartments(self.id, owner, self.name, self.price, false);
+
+    self.owner = owner;
+end;
+
+return Appartments;

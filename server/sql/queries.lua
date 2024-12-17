@@ -1,11 +1,11 @@
-local db = {};
+local db = {}
 
 local QUERIES = {
-    ADD_APPARTMENT = "INSERT INTO appartments (id, owner, name, price, rent, rentTime, rentPrice, renter) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    ADD_APPARTMENT = "INSERT INTO appartments (id, owner, name, price, rent) VALUES (?, ?, ?, ?, ?)"
 }
 
-function db.addAppartments(id)
-    MySQL.prepare(QUERIES.ADD_APPARTMENT, { id })
+function db.addAppartments(id, owner, name, price, rent)
+    MySQL.prepare(QUERIES.ADD_APPARTMENT, { id, owner, name, price, rent })
 end
 
-return;
+return db
