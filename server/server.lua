@@ -15,7 +15,7 @@ local currId = 0;
 (function ()
     while not MySQL do Wait(0) end;
 
-    local resp = MySQL.query.await("SELECT `id`, `owner`, `name` FROM `appartments`")
+    local resp = MySQL.query.await("SELECT `id`, `owner`, `name` FROM `owned_appartments`")
 
     if not resp then return end;
 
@@ -53,7 +53,7 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
     end
 
     if tonumber(xPlayer.getAccount('bank').money) < appartmentData.prices["buyPrice"] then
-        lib.notify(src, { 
+        lib.notify(src, {
             type = 'error', 
             title = locale("NOT_ENOUGH_MONEY", appartmentData.prices["buyPrice"] - xPlayer.getAccount('bank').money) 
         })

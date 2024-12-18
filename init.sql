@@ -1,4 +1,4 @@
-CREATE TABLE `appartments` (
+CREATE TABLE `owned_appartments` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `owner` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
     `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
