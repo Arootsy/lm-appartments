@@ -35,3 +35,35 @@ function Appartments:LoadAppartmentZones()
 end
 
 Appartments:LoadAppartmentZones()
+
+SetEntityCoords(PlayerPedId(), vec3(-187.7674, -740.0722, 50))
+
+RegisterCommand('test', function()
+    local objects = {}
+    local POIOffsets = {}
+    POIOffsets.exit = json.decode('{"x": 0.80353, "y": 1.94699, "z": 0.960894, "h": 270.76}')
+    POIOffsets.clothes = json.decode('{"x": -7.04442, "y": -2.97699, "z": 0.960894, "h": 181.75}')
+    POIOffsets.stash = json.decode('{"x": -3.04442, "y": 2.17699, "z": 0.960894, "h": 181.75}')
+  
+    local spawn = { x = -187.7674, y = -740.0722, z = -50 }
+    
+
+    local spawnPointX = 0.089353
+    local spawnPointY = -2.67699
+    local spawnPointZ = 0.760894
+  
+    RequestModel(`lev_apartment_shell`)
+    while not HasModelLoaded(`lev_apartment_shell`) do
+        Wait(3)
+    end
+  
+    -- local house = CreateObject(`lev_apartment_shell`, spawn.x, spawn.y, spawn.z, false, false, false)
+    ESX.Game.SpawnObject('lev_apartment_shell', {
+        x = spawn.x,
+        y = spawn.y,
+        z = spawn.z
+    }, function(obj)
+        FreezeEntityPosition(obj, true)
+    end)
+    SetEntityCoords(cache.ped, spawn.x + spawnPointX, spawn.y + spawnPointY, spawn.z + spawnPointZ, false, false, false, false)
+end)
