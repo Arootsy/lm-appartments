@@ -8,6 +8,7 @@ lib.locale();
 
 local appartmentRegistry = {}
 local appartmentsFromOwner = {}
+Appartments = {}
 
 -- // [ SETUP ] \\ --
 
@@ -38,6 +39,28 @@ local currId = 0;
         end
     end
 end)();
+
+-- // [ EVENTS ] \\ --
+
+RegisterNetEvent('lm-appartments:enterAppartment', function (data)
+    local src = source;
+    local xPlayer = ESX.GetPlayerFromId(src);
+    local appartment = Config.Appartments[data.index];
+    local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
+
+    if not appartment then
+        -- SUS?
+        return
+    end
+
+
+    if not ownedAppartments or not lib.table.contains(ownedAppartments, data.index) then
+        -- SUS?
+        return
+    end
+
+    Appartments:InitializeAppartment(appartment)
+end)
 
 lib.callback.register('lm-appartments:buyAppartment', function (source, data)
     local src = source
