@@ -52,12 +52,12 @@ function Appartments:InitializeAppartment(source, index)
     local model = appartment.model
 
     local offsetData = Config.Offsets[model]
-    if not offsetData or not offsetData.interactions then lib.print.warn(locale("ACTIONS_NOT_DEFINED")) return end
+    if not offsetData or not offsetData.interactions then lib.print.error("No actions defined for this appartment") return end
 
     local coords = appartment.enterCoords
     ESX.OneSync.SpawnObject(model, vec3(coords.x, coords.y, coords.z - 20), 0, function(netId)
         local entity = NetworkGetEntityFromNetworkId(netId)
-        if not DoesEntityExist(entity) then return end
+        if not DoesEntityExist(entity) then lib.print.warn(("Entity doesn't exist (model: %s)"):format(model)) return end
 
         local entityCoords = GetEntityCoords(entity)
         local interactions = {}

@@ -18,8 +18,6 @@ function openAppartmentMenu(index)
             title = nil,
             disabled = true
         }
-
-        
     else
         opts[#opts+1] = {
             title = locale("BUY_APPARTMENT_TITLE", appartment.label),

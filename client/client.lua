@@ -62,7 +62,7 @@ function Appartments:Interact(action, index)
     if self[funcAction] and type(self[funcAction]) == "function" then
         self[funcAction](self, index)
     else
-        lib.print.warn(locale('INVALID_ACTION', funcAction))
+        lib.print.warn("No function found for action: %s", funcAction)
     end
 end
 

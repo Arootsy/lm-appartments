@@ -42,22 +42,10 @@ function Appartments:Clothing(index)
                     },
                 }) then 
                     if Config.ClothingResource == "illenium-appearance" then
+                        exports["illenium-appearance"]:setPedComponents(cache.ped, data[i].appearance.components)
+                        exports["illenium-appearance"]:setPedProps(cache.ped, data[i].appearance.props)
 
-                        for j = 1, #data[i].appearance.components do
-                            local component = data[i].appearance.components[j]
-                            
-                            SetPedComponentVariation(cache.ped, component.component_id, component.drawable, component.texture, 2)
-                        end                        
-
-                        for j = 1, #data[i].appearance.props do
-                            local prop = data[i].appearance.props[j]
-
-                            SetPedPropIndex(cache.ped, prop.prop_id, prop.drawable, prop.texture, true)
-                        end
-
-                        local appearance = lib.callback.await("illenium-appearance:server:getAppearance", false)
-
-                        TriggerServerEvent("illenium-appearance:server:saveAppearance", appearance)
+                        TriggerServerEvent("illenium-appearance:server:saveAppearance", exports["illenium-appearance"]:getPedAppearance(cache.ped))
                     end
                 else
                     lib.notify({ title = locale("OUTFIT_CHANGE_FAILED"), position = 'top', type = 'error'}) 
