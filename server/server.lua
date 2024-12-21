@@ -8,7 +8,7 @@ lib.locale();
 
 local appartmentRegistry = {}
 local appartmentsFromOwner = {}
-Appartments = {}
+Appartments = { Objects = {} }
 
 -- // [ SETUP ] \\ --
 
@@ -40,26 +40,60 @@ local currId = 0;
     end
 end)();
 
+-- // [ FUNCTIONS ] \\ --
+function Appartments:InitializeAppartment(source, index)
+    local src = source
+    local xPlayer = ESX.GetPlayerFromId(src)
+    local ped = GetPlayerPed(src)
+
+    local appartment = Config.Appartments[index]
+    if not appartment then return end
+    
+    local model = appartment.model
+
+    local offsetData = Config.Offsets[model]
+    if not offsetData or not offsetData.interactions then lib.print.warn(locale("ACTIONS_NOT_DEFINED")) return end
+
+    local coords = appartment.enterCoords
+    ESX.OneSync.SpawnObject(model, vec3(coords.x, coords.y, coords.z - 20), 0, function(netId)
+        local entity = NetworkGetEntityFromNetworkId(netId)
+        if not DoesEntityExist(entity) then return end
+
+        local entityCoords = GetEntityCoords(entity)
+        local interactions = {}
+
+        for action, data in pairs(offsetData.interactions) do
+            local offset = data.offset
+            interactions[#interactions+1] = { icon = data.icon, action = action, coords = vec3(entityCoords.x + offset.x, entityCoords.y + offset.y, entityCoords.z + offset.z) }
+        end
+
+        lib.callback.await('lm-appartments:enterAppartment', src, index, {
+            appartmentCoords = entityCoords,
+            interactions = interactions,
+        })
+
+        FreezeEntityPosition(entity, true)
+        local exitOffset = offsetData.interactions.exit.offset
+
+        xPlayer.setCoords(vec3(entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z))
+
+        Appartments.Objects[#Appartments.Objects + 1] = { entity = entity, coords = entityCoords }
+    end)
+end
+
 -- // [ EVENTS ] \\ --
 
-RegisterNetEvent('lm-appartments:enterAppartment', function (data)
+RegisterNetEvent('lm-appartments:server:enterAppartment', function (data)
     local src = source;
     local xPlayer = ESX.GetPlayerFromId(src);
-    local appartment = Config.Appartments[data.index];
     local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
-
-    if not appartment then
-        -- SUS?
-        return
-    end
-
 
     if not ownedAppartments or not lib.table.contains(ownedAppartments, data.index) then
         -- SUS?
         return
     end
 
-    Appartments:InitializeAppartment(appartment)
+    Appartments:InitializeAppartment(xPlayer.source, data.index)
 end)
 
 lib.callback.register('lm-appartments:buyAppartment', function (source, data)
@@ -115,4 +149,67 @@ lib.callback.register('lm-appartments:getIsAppartmentOwnedFromOwner', function (
     local xPlayer = ESX.GetPlayerFromId(src)
 
     return lib.table.contains(appartmentsFromOwner[xPlayer.identifier], id)
+end)
+
+lib.callback.register('lm-appartments:exitAppartment', function (source, index)
+    local src = source
+    local xPlayer = ESX.GetPlayerFromId(src)
+
+    xPlayer.setCoords(Config.Appartments[index].enterCoords)
+
+    for i = 1, #Appartments.Objects do
+        if DoesEntityExist(Appartments.Objects[i].entity) then
+            DeleteEntity(Appartments.Objects[i].entity)
+        end
+    end
+end)
+
+lib.callback.register('lm-appartments:fetchClothing', function (source, index)
+    local src = source
+    local xPlayer = ESX.GetPlayerFromId(src)
+    local data = {}
+
+    if Config.ClothingResource == "illenium-appearance" then
+        local response = MySQL.query.await('SELECT * FROM `player_outfits` WHERE `citizenid` = ?', {
+            xPlayer.identifier
+        })
+
+        for i = 1, #response do        
+            data[#data + 1] = {
+                label = response[i].outfitname,
+                appearance = {
+                    model = response[i].model,
+                    props = json.decode(response[i].props),
+                    components = json.decode(response[i].components)
+                }
+            }
+        end  
+    elseif Config.ClothingResource == 'ox_appearance' or Config.ClothingResource == 'esx_skin' then
+        local response = MySQL.query.await('SELECT * FROM `outfits` WHERE `owner` = ?', {
+            xPlayer.identifier
+        })
+
+        data[#data + 1] = {
+            label = response[i].outfitname,
+            appearance = {
+                model = response[i].outfitModel, 
+                props = json.decode(response[i].outfitProps), 
+                components = json.decode(response[i].outfitComponents)
+            }
+        }
+    elseif Config.ClothingResource == "custom" then
+        -- Do something custom
+    end
+
+    return data
+end)
+
+AddEventHandler('onResourceStop', function (resource)
+    if cache.resource ~= resource then return end;
+
+    for i = 1, #Appartments.Objects do
+        if DoesEntityExist(Appartments.Objects[i].entity) then
+            DeleteEntity(Appartments.Objects[i].entity)
+        end
+    end
 end)

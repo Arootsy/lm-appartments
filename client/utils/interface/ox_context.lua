@@ -10,7 +10,7 @@ function openAppartmentMenu(index)
         opts[#opts+1] = {
             title = locale("ENTER_APPARTMENT"),
             icon = 'fas fa-door-open',
-            serverEvent = 'lm-appartments:enterAppartment',
+            serverEvent = 'lm-appartments:server:enterAppartment',
             args = { index = index }
         }
 

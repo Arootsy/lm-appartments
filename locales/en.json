@@ -7,4 +7,12 @@
     "RENT_APPARTMENT_DESC": "Rent appartment: %s for €%s,- a day",
     "NOT_ENOUGH_MONEY": "You don't have enough money! You need €%s,- more.",
     "BOUGHT_APPARTMENT": "You bought appartment: %s for €%s,-",
+    "PRESS_E_TO_INTERACT_CLOTHING": "[E] - Open Clothing Closet",
+    "PRESS_E_TO_INTERACT_STASH": "[E] - Open Stash",
+    "PRESS_E_TO_INTERACT_EXIT": "[E] - Exit",
+    "INVALID_ACTION": "No function found for action: %s",
+    "ACTIONS_NOT_DEFINED": "No actions defined for this appartment",
+    "OUTFIT_MENU": "%s: Outfit Menu",
+    "OUTFIT_CHANGE_FAILED": "Failed to change outfit",
+    "PROG_CHANGING_OUTFIT": "Changing outfit to %s...",
 }
