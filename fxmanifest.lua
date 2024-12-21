@@ -4,7 +4,7 @@ use_fxv2_oal "yes"
 lua54 "yes"
 
 name "lm-apparments"
-author "Zweetstreep & Alan"
+author "Zweetstreep"
 version "1.0.0"
 
 client_scripts { "client/**/*.lua" }

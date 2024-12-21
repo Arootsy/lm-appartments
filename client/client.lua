@@ -10,7 +10,7 @@ Appartments = { Zones = {}, Blips = {} }
 -- // [ FUNCTIONS ] \\ --
 
 function Appartments:CreateBlips(appName, appData)
-    local isOwner = not isOnwer and lib.callback.await('lm-appartments:isOwnerFromAppartment', false, appName) or isOnwer
+    local isOwner = lib.callback.await('lm-appartments:isOwnerFromAppartment', false, appName)
     Appartments.Blips[appName] = AddBlipForCoord(appData.enterCoords)
 
     SetBlipSprite(Appartments.Blips[appName], isOwner and 40 or 350)
@@ -134,6 +134,16 @@ lib.callback.register('lm-appartments:enterAppartment', function (index, data)
     return true
 end)
 
+lib.callback.register("lm-appartments:inputDialogCheckBox", function (data)
+    local input = lib.inputDialog(data.label, {
+        {type = 'checkbox', label = data.checkboxLabel},
+    })
+       
+    if not input then return end;
+
+    return input[1]
+end)
+
 -- // [ EVENTS ] \\ --
 
 AddEventHandler('onResourceStop', function (resource)
@@ -148,6 +158,11 @@ end)
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(playerData)
     Appartments:LoadAppartmentZones()
+end)
+
+RegisterNetEvent('lm-appartments:client:removeAppartment', function (index)
+    RemoveBlip(Appartments.Blips[index])
+    Appartments:CreateBlips(index, Config.Appartments[index])
 end)
 
 Appartments:LoadAppartmentZones()

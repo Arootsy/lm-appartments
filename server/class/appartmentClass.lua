@@ -15,13 +15,19 @@ function Appartments:constructor(id, owner, name, price, rent)
     self.owner = owner;
     self.name = name;
     self.price = price;
-    self.rent = rent;
+    self.rent = rent or false;
 end;
 
-function Appartments:buy(owner)
-    db.addAppartments(self.id, owner, self.name, self.price, false);
+function Appartments:buy(owner, isRent)
+    db.addAppartments(self.id, owner, self.name, self.price, isRent or false);
 
     self.owner = owner;
 end;
+
+function Appartments:sell(owner)
+    db.removeAppartment(self.id, owner, self.name, self.price, false)
+
+    self.owner = nil
+end
 
 return Appartments;
