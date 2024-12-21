@@ -52,6 +52,7 @@ end
 
 
 function Appartments:Interact(action, index)
+    --http://lua-users.org/wiki/LuaStyleGuide
     local function toCamelCase(str)
         return (str:gsub("^%l", string.upper))
     end
@@ -104,6 +105,8 @@ function Appartments:LoadAppartment(index, data)
     end
 end
 
+-- // [ CALLBACKS ] \\ --
+
 lib.callback.register('lm-appartments:enterAppartment', function (index, data)
     Appartments:DoScreenFade()
 
@@ -115,6 +118,8 @@ lib.callback.register('lm-appartments:enterAppartment', function (index, data)
 
     return true
 end)
+
+-- // [ EVENTS ] \\ --
 
 AddEventHandler('onResourceStop', function (resource)
     if cache.resource ~= resource then return end;

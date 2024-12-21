@@ -144,7 +144,7 @@ lib.callback.register('lm-appartments:fetchAppartments', function (source)
     return appartmentRegistry or {}
 end)
 
-lib.callback.register('lm-appartments:getIsAppartmentOwnedFromOwner', function (source, id)
+lib.callback.register('lm-appartments:isOwnerFromAppartment', function (source, id)
     local src = source
     local xPlayer = ESX.GetPlayerFromId(src)
 
@@ -199,6 +199,8 @@ lib.callback.register('lm-appartments:fetchClothing', function (source, index)
         }
     elseif Config.ClothingResource == "custom" then
         -- Do something custom
+    else
+        lib.print.error(("Invalid clothing resource: %s"):format(Config.ClothingResource))
     end
 
     return data

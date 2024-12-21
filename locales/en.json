@@ -1,7 +1,7 @@
 {
     "PRESS_E_TO_ENTER": "[E] - Open %s",
-    "ENTER_APPARTMENT": "Enter appartment",
-    "BUY_APPARTMENT_TITLE": "Buy appartment",
+    "ENTER_APPARTMENT": "Enter %s",
+    "BUY_APPARTMENT_TITLE": "Buy %s",
     "BUY_APPARTMENT_DESC": "Buy appartment: %s for €%s,-",
     "RENT_APPARTMENT_TITLE": "Rent appartment",
     "RENT_APPARTMENT_DESC": "Rent appartment: %s for €%s,- a day",

@@ -3,12 +3,12 @@ lib.locale();
 
 function openAppartmentMenu(index)
     local appartment = Config.Appartments[index]
-    local isOwner = not isOnwer and lib.callback.await('lm-appartments:getIsAppartmentOwnedFromOwner', false, index) or isOnwer
+    local isOwner = not isOnwer and lib.callback.await('lm-appartments:isOwnerFromAppartment', false, index) or isOnwer
     local opts = {}
 
     if isOwner then
         opts[#opts+1] = {
-            title = locale("ENTER_APPARTMENT"),
+            title = locale("ENTER_APPARTMENT", appartment.label),
             icon = 'fas fa-door-open',
             serverEvent = 'lm-appartments:server:enterAppartment',
             args = { index = index }
@@ -18,9 +18,11 @@ function openAppartmentMenu(index)
             title = nil,
             disabled = true
         }
+
+        
     else
         opts[#opts+1] = {
-            title = locale("BUY_APPARTMENT_TITLE"),
+            title = locale("BUY_APPARTMENT_TITLE", appartment.label),
             description = locale("BUY_APPARTMENT_DESC", Config.Appartments[index].label, Config.Appartments[index].prices.buyPrice),
             icon = 'fas fa-key',
             onSelect = function ()
