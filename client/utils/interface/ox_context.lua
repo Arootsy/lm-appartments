@@ -18,6 +18,14 @@ function openAppartmentMenu(index)
             title = nil,
             disabled = true
         }
+
+        opts[#opts+1] = {
+            title = isOwner == 'rent' and locale("CANCELRENT_APPARTMENT_TITLE") or locale("SELL_APPARTMENT_TITLE"),
+            description = isOwner == 'rent' and locale("CANCELRENT_APPARTMENT_DESC", Config.Appartments[index].label) or locale("SELL_APPARTMENT_DESC", Config.Appartments[index].label, ESX.Math.GroupDigits(math.floor(Config.Appartments[index].prices.buyPrice * Config.Appartments[index].prices.sellPrice))),
+            icon = 'fas fa-key',
+            serverEvent = 'lm-appartments:sellAppartment',
+            args = { index = index }
+        }
     else
         opts[#opts+1] = {
             title = locale("BUY_APPARTMENT_TITLE", appartment.label),
@@ -25,6 +33,15 @@ function openAppartmentMenu(index)
             icon = 'fas fa-key',
             onSelect = function ()
                 isOnwer = lib.callback.await('lm-appartments:buyAppartment',false, { index = index })
+
+                local succ = lib.waitFor(function ()
+                    return isOnwer
+                end)
+
+                if succ then
+                    RemoveBlip(Appartments.Blips[index])
+                    Appartments:CreateBlips(index, appartment)
+                end
             end
         }
 
@@ -35,6 +52,7 @@ function openAppartmentMenu(index)
             serverEvent = 'lm-appartments:rentAppartment',
             args = { index = index }
         }
+
     end
 
     lib.registerContext({

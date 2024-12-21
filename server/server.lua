@@ -8,7 +8,7 @@ lib.locale();
 
 local appartmentRegistry = {}
 local appartmentsFromOwner = {}
-Appartments = { Objects = {} }
+Appartments = { Objects = {}, Stashes = {} }
 
 -- // [ SETUP ] \\ --
 
@@ -24,7 +24,7 @@ local currId = 0;
         local row = resp[i]
 
         local appartment = class:new(row.id, row.owner, row.name, Config.Appartments[row.name].price, Config.Appartments[row.name].rent);
-        
+
         appartmentRegistry[row.name] = appartment;
 
         if appartmentsFromOwner[appartment.owner] then
@@ -33,7 +33,15 @@ local currId = 0;
             appartmentsFromOwner[appartment.owner] = {}
             appartmentsFromOwner[appartment.owner][#appartmentsFromOwner[appartment.owner] + 1] = appartment.name;
         end
-    
+
+        Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
+            ("%s:%s"):format(appartment.name, appartment.owner),
+            ("%s"):format(Config.Appartments[appartment.name].label),
+            Config.Appartments[appartment.name]["stash"]["stashSlots"],
+            Config.Appartments[appartment.name]["stash"]["stashWeight"],
+            appartment.owner
+        )
+
         if row.id > currId then
             currId = row.id;
         end
@@ -73,10 +81,12 @@ function Appartments:InitializeAppartment(source, index)
         })
 
         FreezeEntityPosition(entity, true)
+        SetEntityRoutingBucket(entity, src+1)
+
         local exitOffset = offsetData.interactions.exit.offset
 
         xPlayer.setCoords(vec3(entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z))
-
+        
         Appartments.Objects[#Appartments.Objects + 1] = { entity = entity, coords = entityCoords }
     end)
 end
@@ -88,12 +98,14 @@ RegisterNetEvent('lm-appartments:server:enterAppartment', function (data)
     local xPlayer = ESX.GetPlayerFromId(src);
     local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
 
-    if not ownedAppartments or not lib.table.contains(ownedAppartments, data.index) then
+    if not lib.table.contains(ownedAppartments or {}, data.index) then
         -- SUS?
         return
     end
-
+    
     Appartments:InitializeAppartment(xPlayer.source, data.index)
+    
+    SetPlayerRoutingBucket(src, src+1)
 end)
 
 lib.callback.register('lm-appartments:buyAppartment', function (source, data)
@@ -129,9 +141,16 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
     if not appartmentsFromOwner[xPlayer.identifier] then
         appartmentsFromOwner[xPlayer.identifier] = {}
     end
-
-    appartmentsFromOwner[xPlayer.identifier][#appartmentsFromOwner[xPlayer.identifier] + 1] = newAppartment.appId
-
+    
+    appartmentsFromOwner[newAppartment.owner][#appartmentsFromOwner[newAppartment.owner] + 1] = newAppartment.name;
+    
+    Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
+        ("%s:%s"):format(newAppartment.name, newAppartment.owner),
+        ("%s"):format(Config.Appartments[newAppartment.name].label),
+        Config.Appartments[newAppartment.name]["stash"]["stashSlots"],
+        Config.Appartments[newAppartment.name]["stash"]["stashWeight"],
+        newAppartment.owner
+    )
     lib.notify(src, { title = locale("BOUGHT_APPARTMENT", appartmentData.label, appartmentData.prices['buyPrice']), position = 'top', type = 'success' })
 
     return true
@@ -148,7 +167,7 @@ lib.callback.register('lm-appartments:isOwnerFromAppartment', function (source, 
     local src = source
     local xPlayer = ESX.GetPlayerFromId(src)
 
-    return lib.table.contains(appartmentsFromOwner[xPlayer.identifier], id)
+    return lib.table.contains(appartmentsFromOwner[xPlayer.identifier] or {}, id)
 end)
 
 lib.callback.register('lm-appartments:exitAppartment', function (source, index)
@@ -156,6 +175,7 @@ lib.callback.register('lm-appartments:exitAppartment', function (source, index)
     local xPlayer = ESX.GetPlayerFromId(src)
 
     xPlayer.setCoords(Config.Appartments[index].enterCoords)
+    SetPlayerRoutingBucket(src, 0)
 
     for i = 1, #Appartments.Objects do
         if DoesEntityExist(Appartments.Objects[i].entity) then

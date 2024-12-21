@@ -5,15 +5,30 @@ Config.Appartments = {
         label = 'Schlongberg Sachs',
         prices = {
             ['buyPrice'] = 285000,
-            ['rentPrice'] = 1500
+            ['rentPrice'] = 1500,
+            ['sellPrice'] = 0.2 -- [[ 20% of the buy price ]]
         },
         model = 'lev_apartment_shell',
-        enterCoords = vec3(-213.6116, -727.8959, 33.5534),
+        enterCoords = vec3(-213.61, -727.89, 33.55),
         stash = {
             ['stashSlots'] = 60,
-            ['stashWeight'] = 200
+            ['stashWeight'] = 20000
         }
     },
+    ["TemplarHotel"] = {
+        label = 'Templar Hotel',
+        prices = {
+            ['buyPrice'] = 285000,
+            ['rentPrice'] = 1500,
+            ['sellPrice'] = 0.2 -- [[ 20% of the buy price ]]
+        },
+        model = 'lev_apartment_shell',
+        enterCoords = vec3(296.23, -1027.86, 29.21),
+        stash = {
+            ['stashSlots'] = 60,
+            ['stashWeight'] = 20000
+        }
+    }
 }
 
 Config.ClothingResource = "illenium-appearance"

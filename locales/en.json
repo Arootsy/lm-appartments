@@ -13,4 +13,8 @@
     "OUTFIT_MENU": "%s: Outfit Menu",
     "OUTFIT_CHANGE_FAILED": "Failed to change outfit",
     "PROG_CHANGING_OUTFIT": "Changing outfit to %s...",
+    "CANCELRENT_APPARTMENT_TITLE": "Cancel Rent",
+    "CANCELRENT_APPARTMENT_DESC": "Cancel the rent for: %s",
+    "SELL_APPARTMENT_TITLE": "Sell Apartment",
+    "SELL_APPARTMENT_DESC": "Sell the apartment: %s for €%s,-"
 }

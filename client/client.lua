@@ -5,12 +5,29 @@ local Config   <const> = require "shared.config"
 
 -- // [ VARIABLES ] \\ --
 OwnedAppartments = lib.callback.await('lm-appartments:fetchAppartments', false)
-Appartments = { Zones = {} }
+Appartments = { Zones = {}, Blips = {} }
 
 -- // [ FUNCTIONS ] \\ --
 
+function Appartments:CreateBlips(appName, appData)
+    local isOwner = not isOnwer and lib.callback.await('lm-appartments:isOwnerFromAppartment', false, appName) or isOnwer
+    Appartments.Blips[appName] = AddBlipForCoord(appData.enterCoords)
+
+    SetBlipSprite(Appartments.Blips[appName], isOwner and 40 or 350)
+    SetBlipDisplay(Appartments.Blips[appName], 4)
+    SetBlipScale(Appartments.Blips[appName], 0.8)
+    SetBlipColour(Appartments.Blips[appName], isOwner and 2 or 0)
+    SetBlipAsShortRange(Appartments.Blips[appName], true)
+
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(appData.label)
+    EndTextCommandSetBlipName(Appartments.Blips[appName])
+end
+
 function Appartments:LoadAppartmentZones()
     for appName, appData in pairs(Config.Appartments) do
+
+        Appartments:CreateBlips(appName, appData)
 
         local enterZone = lib.points.new({ coords = appData.enterCoords, distance = 25, debug = true })
         self[#self + 1] = enterZone
@@ -33,8 +50,6 @@ function Appartments:LoadAppartmentZones()
         end
     end
 end
-
-Appartments:LoadAppartmentZones()
 
 function Appartments:DoScreenFade()
     DoScreenFadeOut(1000)
@@ -129,3 +144,10 @@ AddEventHandler('onResourceStop', function (resource)
         lib.hideTextUI()
     end
 end)
+
+RegisterNetEvent('esx:playerLoaded')
+AddEventHandler('esx:playerLoaded', function(playerData)
+    Appartments:LoadAppartmentZones()
+end)
+
+Appartments:LoadAppartmentZones()
