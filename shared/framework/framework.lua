@@ -7,7 +7,3 @@ end
 function Framework.Ox()
     return GetResourceState("ox_core") ~= "missing"
 end
-
-function Framework.QBCore()
-    return GetResourceState("qb-core") ~= "missing"
-end

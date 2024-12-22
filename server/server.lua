@@ -148,6 +148,8 @@ RegisterNetEvent('lm-appartments:removeAppartment', function(data)
     appartmentsFromOwner[xPlayer.identifier][data.index] = nil
 end)
 
+-- // [ CALLBACKS ] \\ --
+
 lib.callback.register('lm-appartments:rentAppartment', function (source, data)
     local src = source
     local index = data.index
@@ -206,8 +208,6 @@ lib.callback.register('lm-appartments:rentAppartment', function (source, data)
 
     return 'rent'
 end)
-
--- // [ CALLBACKS ] \\ --
 
 lib.callback.register('lm-appartments:buyAppartment', function (source, data)
     local src = source

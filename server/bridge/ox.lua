@@ -11,7 +11,7 @@ function Framework.GetPlayer(src)
 end
 
 function Framework.GetPlayerFromIdentifier(identifier)
-    local Player = Ox.GetPlayerByIdentifier({ identifier = identifier })
+    local Player = Ox.GetPlayerByIdentifier({ license2 = identifier })
 
     if Player then
         return Player
