@@ -29,7 +29,7 @@ function Appartments:LoadAppartmentZones()
 
         Appartments:CreateBlips(appName, appData)
 
-        local enterZone = lib.points.new({ coords = appData.enterCoords, distance = 25, debug = true })
+        local enterZone = lib.points.new({ coords = appData.enterCoords, distance = 25, debug = Config.Debug })
         self[#self + 1] = enterZone
 
         local textUI = false
@@ -86,7 +86,7 @@ function Appartments:LoadAppartment(index, data)
     Appartments.Zones[#Appartments.Zones+1] = lib.zones.sphere({
         coords = data.appartmentCoords,
         radius = 50,
-        debug = true,
+        debug = Config.Debug,
         inside = function ()
             for i = 1, #data.interactions do
                 local interaction = data.interactions[i]
@@ -102,7 +102,7 @@ function Appartments:LoadAppartment(index, data)
         Appartments.Zones[#Appartments.Zones+1] = lib.zones.sphere({
             coords = interaction.coords,
             radius = 1.5,
-            debug = true,
+            debug = Config.Debug,
             onEnter = function ()
                 lib.showTextUI(locale(('PRESS_E_TO_INTERACT_%s'):format(interaction.action:upper())), {
                     icon = interaction.icon

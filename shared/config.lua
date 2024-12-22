@@ -1,5 +1,7 @@
 local Config = {}
 
+Config.Debug = false
+
 Config.Appartments = {
     ["SchlongbergSachs"] = {
         label = 'Schlongberg Sachs',
