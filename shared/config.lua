@@ -35,6 +35,7 @@ Config.Appartments = {
 
 Config.ClothingResource = "illenium-appearance"
 
+-- TO CALCULATE OFFSETS: https://github.com/qw-scripts/qw-offsetfinder
 Config.Offsets = {
     ["lev_apartment_shell"] = {
         interactions = {
