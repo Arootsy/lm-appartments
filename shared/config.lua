@@ -10,7 +10,7 @@ Config.Appartments = {
             ['rentPrice'] = 1500,
             ['sellPrice'] = 0.2 -- [[ 20% of the buy price ]]
         },
-        model = 'lev_apartment_shell',
+        model = 'lev_apartment_shell', -- https://github.com/levdevlev/lev-apartments/tree/main
         enterCoords = vec3(-213.61, -727.89, 33.55),
         stash = {
             ['stashSlots'] = 60,

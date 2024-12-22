@@ -154,8 +154,7 @@ AddEventHandler('onResourceStop', function (resource)
     end
 end)
 
-RegisterNetEvent('esx:playerLoaded')
-AddEventHandler('esx:playerLoaded', function(playerData)
+RegisterNetEvent(Framework.OnPlayerLoaded, function ()
     Appartments:LoadAppartmentZones()
 end)
 
