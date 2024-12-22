@@ -131,9 +131,9 @@ RegisterNetEvent('lm-appartments:removeAppartment', function(data)
     end
 
     if appartment.rent then
-        xPlayer.addAccountMoney('bank', math.floor(Config.Appartments[appartment.name].prices.buyPrice * Config.Appartments[appartment.name].prices.sellPrice))
         lib.notify(src, { title = locale("CANCELRENT_APPARTMENT", Config.Appartments[appartment.name].label), position = 'top', type = 'success' })
     else
+        xPlayer.addAccountMoney('bank', math.floor(Config.Appartments[appartment.name].prices.buyPrice * Config.Appartments[appartment.name].prices.sellPrice))
         lib.notify(src, { title = locale("SOLD_APPARTMENT", Config.Appartments[appartment.name].label, GroupDigits(math.floor(Config.Appartments[data.index].prices.buyPrice * Config.Appartments[data.index].prices.sellPrice))), position = 'top', type = 'success' })
     end
     
@@ -148,7 +148,7 @@ RegisterNetEvent('lm-appartments:removeAppartment', function(data)
     appartmentsFromOwner[xPlayer.identifier][data.index] = nil
 end)
 
-RegisterNetEvent('lm-appartments:rentAppartment', function (data)
+lib.callback.register('lm-appartments:rentAppartment', function (source, data)
     local src = source
     local index = data.index
     local xPlayer = ESX.GetPlayerFromId(src)
@@ -161,7 +161,7 @@ RegisterNetEvent('lm-appartments:rentAppartment', function (data)
         checkboxLabel = locale("CONFIRM_RENT_APPARTMENT_CHECKBOX")
     })
 
-    if not success then return end;
+    if not success then return false end;
 
     if tonumber(xPlayer.getAccount('bank').money) < appartment.prices["rentPrice"] then
         lib.notify(src, {
@@ -203,6 +203,8 @@ RegisterNetEvent('lm-appartments:rentAppartment', function (data)
     )
 
     lib.notify(src, { title = locale("RENTED_APPARTMENT", appartment.label, GroupDigits(appartment.prices['rentPrice'])), position = 'top', type = 'success' })
+
+    return 'rent'
 end)
 
 -- // [ CALLBACKS ] \\ --
@@ -225,7 +227,7 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
         checkboxLabel = locale("CONFIRM_BUY_APPARTMENT_CHECKBOX")
     })
 
-    if not success then return end;
+    if not success then return false end;
 
     if tonumber(xPlayer.getAccount('bank').money) < appartmentData.prices["buyPrice"] then
         lib.notify(src, {
@@ -356,37 +358,35 @@ AddEventHandler('onResourceStop', function (resource)
 end)
 
 
--- lib.cron.new("0 12 * * *", function()
-    Citizen.CreateThread(function ()        
-        local users = MySQL.query.await("SELECT `owner` FROM `owned_appartments` WHERE `rent` = 1")
-        
-        if not users then return end
+lib.cron.new("0 12 * * *", function()
+    local users = MySQL.query.await("SELECT `owner` FROM `owned_appartments` WHERE `rent` = 1")
+    
+    if not users then return end
 
-        for i = 1, #users do
-            local xPlayer = ESX.GetPlayerFromIdentifier(users[i].owner)
-            if not xPlayer then goto continue end
+    for i = 1, #users do
+        local xPlayer = ESX.GetPlayerFromIdentifier(users[i].owner)
+        if not xPlayer then goto continue end
 
-            local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
-            if not ownedAppartments then goto continue end
+        local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
+        if not ownedAppartments then goto continue end
 
-            for _, appartment in pairs(ownedAppartments) do
-                if appartment.rent == 0 then goto continue end
+        for _, appartment in pairs(ownedAppartments) do
+            if appartment.rent == 0 then goto continue end
 
-                if tonumber(xPlayer.getAccount('bank').money) < appartment.price then
-                    appartment:sell(xPlayer.identifier)
+            if tonumber(xPlayer.getAccount('bank').money) < appartment.price then
+                appartment:sell(xPlayer.identifier)
 
-                    appartmentRegistry[appartment.id][appartment.name] = nil
-                    appartmentsFromOwner[xPlayer.identifier][appartment.name] = nil
+                appartmentRegistry[appartment.id][appartment.name] = nil
+                appartmentsFromOwner[xPlayer.identifier][appartment.name] = nil
 
-                    lib.notify(xPlayer.source, { title = locale("RENT_EXPIRED", Config.Appartments[appartment.name].label), type = 'error', position = 'top' })
-                else
-                    xPlayer.removeAccountMoney('bank', appartment.price)
+                lib.notify(xPlayer.source, { title = locale("RENT_EXPIRED", Config.Appartments[appartment.name].label), type = 'error', position = 'top' })
+            else
+                xPlayer.removeAccountMoney('bank', appartment.price)
 
-                    lib.notify(xPlayer.source, { title = locale("RENT_PAID", Config.Appartments[appartment.name].label, GroupDigits(appartment.price)), type = 'success', position = 'top' })
-                end
-                ::continue::
+                lib.notify(xPlayer.source, { title = locale("RENT_PAID", Config.Appartments[appartment.name].label, GroupDigits(appartment.price)), type = 'success', position = 'top' })
             end
             ::continue::
         end
-    end)
--- end)
+        ::continue::
+    end
+end)

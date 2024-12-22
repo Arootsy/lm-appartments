@@ -32,7 +32,7 @@ function openAppartmentMenu(index)
             description = locale("BUY_APPARTMENT_DESC", Config.Appartments[index].label, GroupDigits(Config.Appartments[index].prices.buyPrice)),
             icon = 'fas fa-key',
             onSelect = function ()
-                isOnwer = lib.callback.await('lm-appartments:buyAppartment',false, { index = index })
+                isOnwer = lib.callback.await('lm-appartments:buyAppartment', false, { index = index })
 
                 local succ = lib.waitFor(function ()
                     return isOnwer
@@ -50,7 +50,18 @@ function openAppartmentMenu(index)
             description = locale("RENT_APPARTMENT_DESC", Config.Appartments[index].label, GroupDigits(Config.Appartments[index].prices.rentPrice)),
             icon = 'fas fa-retweet',
             serverEvent = 'lm-appartments:rentAppartment',
-            args = { index = index }
+            onSelect = function ()
+                isOwner = lib.callback.await('lm-appartments:rentAppartment', false, { index = index })
+
+                local succ = lib.waitFor(function ()
+                    return isOwner
+                end)
+
+                if succ then
+                    RemoveBlip(Appartments.Blips[index])
+                    Appartments:CreateBlips(index, appartment)
+                end
+            end
         }
 
     end

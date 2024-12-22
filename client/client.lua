@@ -136,12 +136,12 @@ end)
 
 lib.callback.register("lm-appartments:inputDialogCheckBox", function (data)
     local input = lib.inputDialog(data.label, {
-        {type = 'checkbox', label = data.checkboxLabel},
+        { type = 'checkbox', label = data.checkboxLabel, required = true },
     })
        
-    if not input then return end;
+    if not input then lib.notify({ title = locale("CHECKBOX_FAILED"), type = 'error', position = 'top' }) end;
 
-    return input[1]
+    return input?[1] or false
 end)
 
 -- // [ EVENTS ] \\ --
