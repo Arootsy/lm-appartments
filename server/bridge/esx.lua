@@ -3,7 +3,7 @@ if not Framework.ESX() then return end;
 local ESX = exports['es_extended']:getSharedObject()
 
 function Framework.GetPlayer(src)
-    local xPlayer = Framework.GetPlayer(src)
+    local xPlayer = ESX.GetPlayerFromId(src)
 
     if xPlayer then
         return xPlayer

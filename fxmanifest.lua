@@ -9,5 +9,5 @@ version "1.0.0"
 
 client_scripts { "client/**/*.lua" }
 server_scripts { "server/**/*.lua", "@oxmysql/lib/MySQL.lua" }
-shared_scripts { "@ox_lib/init.lua", "shared/*.lua" }
+shared_scripts { "@ox_lib/init.lua", "shared/**/*.lua" }
 files { "locales/*.json" }

@@ -1,6 +1,6 @@
 local Config <const> = require "shared.config"
 
-while not Appartments do Wait(0) end
+-- while not Appartments do Wait(0) end
 
 function Appartments:Exit(index)
     Appartments:DoScreenFade()
