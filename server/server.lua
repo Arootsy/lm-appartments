@@ -295,7 +295,7 @@ lib.callback.register('lm-appartments:exitAppartment', function (source, index)
     local src = source
     local xPlayer = Framework.GetPlayer(src)
 
-    xPlayer.setCoords(Config.Appartments[index].enterCoords)
+    SetEntityCoords(GetPlayerPed(src), Config.Appartments[index].enterCoords)
     SetPlayerRoutingBucket(src, 0)
 
     for i = 1, #Appartments.Objects do
