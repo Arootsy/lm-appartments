@@ -1,11 +1,10 @@
 -- // [ IMPORTS ] \\ --
 lib.locale()
-
 local Config   <const> = require "shared.config"
 
 -- // [ VARIABLES ] \\ --
-OwnedAppartments = lib.callback.await('lm-appartments:fetchAppartments', false)
 Appartments = { Zones = {}, Blips = {} }
+OwnedAppartments = lib.callback.await('lm-appartments:fetchAppartments', false)
 
 -- // [ FUNCTIONS ] \\ --
 

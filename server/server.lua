@@ -54,7 +54,7 @@ end)();
 -- // [ FUNCTIONS ] \\ --
 function Appartments:InitializeAppartment(source, index)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
     local ped = GetPlayerPed(src)
 
     local appartment = Config.Appartments[index]
@@ -66,7 +66,7 @@ function Appartments:InitializeAppartment(source, index)
     if not offsetData or not offsetData.interactions then lib.print.error("No actions defined for this appartment") return end
 
     local coords = appartment.enterCoords
-    ESX.OneSync.SpawnObject(model, vec3(coords.x, coords.y, coords.z - 20), 0, function(netId)
+    Appartments:CreateObject(model, vec3(coords.x, coords.y, coords.z - 20), 0, function(netId)
         local entity = NetworkGetEntityFromNetworkId(netId)
         if not DoesEntityExist(entity) then lib.print.warn(("Entity doesn't exist (model: %s)"):format(model)) return end
 
@@ -98,7 +98,7 @@ end
 
 RegisterNetEvent('lm-appartments:server:enterAppartment', function (data)
     local src = source;
-    local xPlayer = ESX.GetPlayerFromId(src);
+    local xPlayer = Framework.GetPlayer(src);
     local ownedAppartments = appartmentsFromOwner[xPlayer.identifier][data.index]
     if not ownedAppartments then return end;
     
@@ -109,7 +109,7 @@ end)
 
 RegisterNetEvent('lm-appartments:removeAppartment', function(data)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
     local appartment = appartmentsFromOwner[xPlayer.identifier][data.index]
 
     if not appartment then return end
@@ -151,7 +151,7 @@ end)
 lib.callback.register('lm-appartments:rentAppartment', function (source, data)
     local src = source
     local index = data.index
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
     local appartment = Config.Appartments[index]
 
     if not appartment then return end
@@ -211,7 +211,7 @@ end)
 
 lib.callback.register('lm-appartments:buyAppartment', function (source, data)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
 
     if not data or not data.index then
         return
@@ -275,7 +275,7 @@ end)
 
 lib.callback.register('lm-appartments:fetchAppartments', function (source)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
 
     if appartmentsFromOwner[xPlayer.identifier] and appartmentsFromOwner[xPlayer.identifier][id] then
         return appartmentsFromOwner[xPlayer.identifier][id].rent and 'rent' or true or false
@@ -284,7 +284,7 @@ end)
 
 lib.callback.register('lm-appartments:isOwnerFromAppartment', function (source, id)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
 
     if appartmentsFromOwner[xPlayer.identifier] and appartmentsFromOwner[xPlayer.identifier][id] then
         return appartmentsFromOwner[xPlayer.identifier][id].rent and 'rent' or true or false
@@ -293,9 +293,9 @@ end)
 
 lib.callback.register('lm-appartments:exitAppartment', function (source, index)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
 
-    xPlayer.setCoords(Config.Appartments[index].enterCoords)
+    SetEntityCoords(GetPlayerPed(src), Config.Appartments[index].enterCoords)
     SetPlayerRoutingBucket(src, 0)
 
     for i = 1, #Appartments.Objects do
@@ -307,7 +307,7 @@ end)
 
 lib.callback.register('lm-appartments:fetchClothing', function (source, index)
     local src = source
-    local xPlayer = ESX.GetPlayerFromId(src)
+    local xPlayer = Framework.GetPlayer(src)
     local data = {}
 
     if Config.ClothingResource == "illenium-appearance" then
@@ -364,7 +364,7 @@ lib.cron.new("0 12 * * *", function()
     if not users then return end
 
     for i = 1, #users do
-        local xPlayer = ESX.GetPlayerFromIdentifier(users[i].owner)
+        local xPlayer = Framework.GetPlayerFromIdentifier(users[i].owner)
         if not xPlayer then goto continue end
 
         local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
