@@ -5,7 +5,6 @@ local Config   <const> = require "shared.config"
 -- // [ VARIABLES ] \\ --
 Appartments = { Zones = {}, Blips = {} }
 OwnedAppartments = lib.callback.await('lm-appartments:fetchAppartments', false)
-
 -- // [ FUNCTIONS ] \\ --
 
 function Appartments:CreateBlips(appName, appData)

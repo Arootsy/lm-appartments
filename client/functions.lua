@@ -64,5 +64,5 @@ function Appartments:Clothing(index)
 end
 
 function Appartments:Stash(index)
-    exports.ox_inventory:openInventory('stash', ("%s:%s"):format(index, LocalPlayer.state.identifier))
+    exports.ox_inventory:openInventory('stash', ("%s:%s"):format(index, Framework.GetIdentifier()))
 end

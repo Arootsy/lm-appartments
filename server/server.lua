@@ -14,41 +14,43 @@ Appartments = { Objects = {}, Stashes = {} }
 
 local currId = 0;
 (function ()
-    while not MySQL do Wait(0) end;
+    CreateThread(function ()
+        while not MySQL do Wait(0) end;
 
-    local resp = MySQL.query.await("SELECT `id`, `owner`, `name`, `price`, `rent` FROM `owned_appartments`")
+        local resp = MySQL.query.await("SELECT `id`, `owner`, `name`, `price`, `rent` FROM `owned_appartments`")
 
-    if not resp then return end;
+        if not resp then return end;
 
-    for i = 1, #resp do
-        local row = resp[i]
+        for i = 1, #resp do
+            local row = resp[i]
 
-        if not appartmentRegistry[row.id] then
-            appartmentRegistry[row.id] = {}
+            if not appartmentRegistry[row.id] then
+                appartmentRegistry[row.id] = {}
+            end
+
+            local appartment = class:new(row.id, row.owner, row.name, row.price, row.rent);
+
+            appartmentRegistry[row.id][row.name] = appartment;
+
+            if not appartmentsFromOwner[appartment.owner] then
+                appartmentsFromOwner[appartment.owner] = {}
+            end
+            
+            appartmentsFromOwner[appartment.owner][appartment.name] = appartment 
+
+            Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
+                ("%s:%s"):format(appartment.name, appartment.owner),
+                ("%s"):format(Config.Appartments[appartment.name].label),
+                Config.Appartments[appartment.name]["stash"]["stashSlots"],
+                Config.Appartments[appartment.name]["stash"]["stashWeight"],
+                appartment.owner
+            )
+
+            if row.id > currId then
+                currId = row.id;
+            end
         end
-
-        local appartment = class:new(row.id, row.owner, row.name, row.price, row.rent);
-
-        appartmentRegistry[row.id][row.name] = appartment;
-
-        if not appartmentsFromOwner[appartment.owner] then
-            appartmentsFromOwner[appartment.owner] = {}
-        end
-        
-        appartmentsFromOwner[appartment.owner][appartment.name] = appartment 
-
-        Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
-            ("%s:%s"):format(appartment.name, appartment.owner),
-            ("%s"):format(Config.Appartments[appartment.name].label),
-            Config.Appartments[appartment.name]["stash"]["stashSlots"],
-            Config.Appartments[appartment.name]["stash"]["stashWeight"],
-            appartment.owner
-        )
-
-        if row.id > currId then
-            currId = row.id;
-        end
-    end
+    end)
 end)();
 
 -- // [ FUNCTIONS ] \\ --
@@ -88,7 +90,7 @@ function Appartments:InitializeAppartment(source, index)
 
         local exitOffset = offsetData.interactions.exit.offset
 
-        xPlayer.setCoords(vec3(entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z))
+        SetEntityCoords(ped, entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z)
         
         Appartments.Objects[#Appartments.Objects + 1] = { entity = entity, coords = entityCoords }
     end)
@@ -133,7 +135,7 @@ RegisterNetEvent('lm-appartments:removeAppartment', function(data)
     if appartment.rent then
         lib.notify(src, { title = locale("CANCELRENT_APPARTMENT", Config.Appartments[appartment.name].label), position = 'top', type = 'success' })
     else
-        xPlayer.addAccountMoney('bank', math.floor(Config.Appartments[appartment.name].prices.buyPrice * Config.Appartments[appartment.name].prices.sellPrice))
+        Framework.AddMoney(xPlayer.source, 'bank', math.floor(Config.Appartments[appartment.name].prices.buyPrice * Config.Appartments[appartment.name].prices.sellPrice))
         lib.notify(src, { title = locale("SOLD_APPARTMENT", Config.Appartments[appartment.name].label, GroupDigits(math.floor(Config.Appartments[data.index].prices.buyPrice * Config.Appartments[data.index].prices.sellPrice))), position = 'top', type = 'success' })
     end
     
@@ -165,15 +167,13 @@ lib.callback.register('lm-appartments:rentAppartment', function (source, data)
 
     if not success then return false end;
 
-    if tonumber(xPlayer.getAccount('bank').money) < appartment.prices["rentPrice"] then
-        lib.notify(src, {
-            type = 'error', 
-            title = locale("NOT_ENOUGH_MONEY", appartment.prices["rentPrice"] - xPlayer.getAccount('bank').money) 
-        })
+    local bool, needed = Framework.HasMoney(src, 'bank', appartment.prices["rentPrice"])
+    if not bool then
+        lib.notify(src, { title = locale("NOT_ENOUGH_MONEY", needed), type = 'error' })
         return
     end
 
-    xPlayer.removeMoney(appartment.prices["rentPrice"])
+    Framework.RemoveMoney(src, 'bank', appartment.prices["rentPrice"])
 
     local newAppartment = class:new(currId + 1, xPlayer.identifier, index, appartment.prices["rentPrice"], true)
     currId = currId + 1
@@ -229,15 +229,13 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
 
     if not success then return false end;
 
-    if tonumber(xPlayer.getAccount('bank').money) < appartmentData.prices["buyPrice"] then
-        lib.notify(src, {
-            type = 'error', 
-            title = locale("NOT_ENOUGH_MONEY", appartmentData.prices["buyPrice"] - xPlayer.getAccount('bank').money) 
-        })
+    local bool, needed = Framework.HasMoney(src, 'bank', appartmentData.prices["buyPrice"])
+    if not bool then
+        lib.notify(src, { title = locale("NOT_ENOUGH_MONEY", needed), type = 'error' })
         return
     end
 
-    xPlayer.removeMoney(appartmentData.prices["buyPrice"])
+    Framework.RemoveMoney(src, 'bank', appartmentData.prices["buyPrice"])
 
     local newAppartment = class:new(currId + 1, xPlayer.identifier, data.index, 0, false)
     currId = currId + 1
@@ -268,6 +266,7 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
         Config.Appartments[newAppartment.name]["stash"]["stashWeight"],
         newAppartment.owner
     )
+
     lib.notify(src, { title = locale("BOUGHT_APPARTMENT", appartmentData.label, GroupDigits(appartmentData.prices['buyPrice'])), position = 'top', type = 'success' })
 
     return true
@@ -280,6 +279,8 @@ lib.callback.register('lm-appartments:fetchAppartments', function (source)
     if appartmentsFromOwner[xPlayer.identifier] and appartmentsFromOwner[xPlayer.identifier][id] then
         return appartmentsFromOwner[xPlayer.identifier][id].rent and 'rent' or true or false
     end
+
+    return false
 end)
 
 lib.callback.register('lm-appartments:isOwnerFromAppartment', function (source, id)
@@ -293,7 +294,6 @@ end)
 
 lib.callback.register('lm-appartments:exitAppartment', function (source, index)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
 
     SetEntityCoords(GetPlayerPed(src), Config.Appartments[index].enterCoords)
     SetPlayerRoutingBucket(src, 0)
@@ -357,8 +357,8 @@ AddEventHandler('onResourceStop', function (resource)
     end
 end)
 
-
-lib.cron.new("0 12 * * *", function()
+-- lib.cron.new("0 12 * * *", function()
+CreateThread(function()
     local users = MySQL.query.await("SELECT `owner` FROM `owned_appartments` WHERE `rent` = 1")
     
     if not users then return end
@@ -373,18 +373,17 @@ lib.cron.new("0 12 * * *", function()
         for _, appartment in pairs(ownedAppartments) do
             if appartment.rent == 0 then goto continue end
 
-            if tonumber(xPlayer.getAccount('bank').money) < appartment.price then
+            if Framework.HasMoney(xPlayer.source, 'bank', appartment.price) then
+                Framework.RemoveMoney(xPlayer.source, 'bank', appartment.price)
+            else
                 appartment:sell(xPlayer.identifier)
 
                 appartmentRegistry[appartment.id][appartment.name] = nil
                 appartmentsFromOwner[xPlayer.identifier][appartment.name] = nil
 
                 lib.notify(xPlayer.source, { title = locale("RENT_EXPIRED", Config.Appartments[appartment.name].label), type = 'error', position = 'top' })
-            else
-                xPlayer.removeAccountMoney('bank', appartment.price)
-
-                lib.notify(xPlayer.source, { title = locale("RENT_PAID", Config.Appartments[appartment.name].label, GroupDigits(appartment.price)), type = 'success', position = 'top' })
             end
+
             ::continue::
         end
         ::continue::
