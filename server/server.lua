@@ -35,8 +35,8 @@ local currId = 0;
             if not appartmentsFromOwner[appartment.owner] then
                 appartmentsFromOwner[appartment.owner] = {}
             end
-            
-            appartmentsFromOwner[appartment.owner][appartment.name] = appartment 
+
+            appartmentsFromOwner[appartment.owner][appartment.name] = appartment
 
             Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
                 ("%s:%s"):format(appartment.name, appartment.owner),
@@ -56,12 +56,11 @@ end)();
 -- // [ FUNCTIONS ] \\ --
 function Appartments:InitializeAppartment(source, index)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
     local ped = GetPlayerPed(src)
 
     local appartment = Config.Appartments[index]
     if not appartment then return end
-    
+
     local model = appartment.model
 
     local offsetData = Config.Offsets[model]
@@ -91,7 +90,7 @@ function Appartments:InitializeAppartment(source, index)
         local exitOffset = offsetData.interactions.exit.offset
 
         SetEntityCoords(ped, entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z)
-        
+
         Appartments.Objects[#Appartments.Objects + 1] = { entity = entity, coords = entityCoords }
     end)
 end
@@ -100,19 +99,20 @@ end
 
 RegisterNetEvent('lm-appartments:server:enterAppartment', function (data)
     local src = source;
-    local xPlayer = Framework.GetPlayer(src);
-    local ownedAppartments = appartmentsFromOwner[xPlayer.identifier][data.index]
-    if not ownedAppartments then return end;
-    
-    Appartments:InitializeAppartment(xPlayer.source, data.index)
-    
-    SetPlayerRoutingBucket(src, src+1)
+    local player = Framework.GetPlayer(src)
+    local ownedAppartments = appartmentsFromOwner[Framework.GetPlayerIdentifier(player)][data.index]
+    if not ownedAppartments then return end
+
+    Appartments:InitializeAppartment(src, data.index)
+
+    SetPlayerRoutingBucket(src, src + 1)
 end)
 
 RegisterNetEvent('lm-appartments:removeAppartment', function(data)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
-    local appartment = appartmentsFromOwner[xPlayer.identifier][data.index]
+    local player = Framework.GetPlayer(src)
+    local identifier = Framework.GetPlayerIdentifier(player)
+    local appartment = appartmentsFromOwner[identifier][data.index]
 
     if not appartment then return end
 
@@ -128,26 +128,26 @@ RegisterNetEvent('lm-appartments:removeAppartment', function(data)
             label = locale("CONFIRM_BUY_SELL_APPARTMENT", Config.Appartments[data.index].label, GroupDigits(math.floor(Config.Appartments[data.index].prices.buyPrice * Config.Appartments[data.index].prices.sellPrice))),
             checkboxLabel = locale("CONFIRM_BUY_SELL_APPARTMENT_CHECKBOX")
         })
-        
+
         if not success then return end;
     end
 
     if appartment.rent then
         lib.notify(src, { title = locale("CANCELRENT_APPARTMENT", Config.Appartments[appartment.name].label), position = 'top', type = 'success' })
     else
-        Framework.AddMoney(xPlayer.source, 'bank', math.floor(Config.Appartments[appartment.name].prices.buyPrice * Config.Appartments[appartment.name].prices.sellPrice))
+        Framework.AddMoney(src, 'bank', math.floor(Config.Appartments[appartment.name].prices.buyPrice * Config.Appartments[appartment.name].prices.sellPrice))
         lib.notify(src, { title = locale("SOLD_APPARTMENT", Config.Appartments[appartment.name].label, GroupDigits(math.floor(Config.Appartments[data.index].prices.buyPrice * Config.Appartments[data.index].prices.sellPrice))), position = 'top', type = 'success' })
     end
-    
-    appartment:sell(xPlayer.identifier)
+
+    appartment:sell(identifier)
 
     appartmentRegistry[appartment.id][appartment.name] = nil
-    
+
 
     TriggerClientEvent('lm-appartments:client:removeAppartment', src, data.index)
 
     appartment = nil
-    appartmentsFromOwner[xPlayer.identifier][data.index] = nil
+    appartmentsFromOwner[identifier][data.index] = nil
 end)
 
 -- // [ CALLBACKS ] \\ --
@@ -155,7 +155,8 @@ end)
 lib.callback.register('lm-appartments:rentAppartment', function (source, data)
     local src = source
     local index = data.index
-    local xPlayer = Framework.GetPlayer(src)
+    local player = Framework.GetPlayer(src)
+    local identifier = Framework.GetPlayerIdentifier(player)
     local appartment = Config.Appartments[index]
 
     if not appartment then return end
@@ -175,10 +176,10 @@ lib.callback.register('lm-appartments:rentAppartment', function (source, data)
 
     Framework.RemoveMoney(src, 'bank', appartment.prices["rentPrice"])
 
-    local newAppartment = class:new(currId + 1, xPlayer.identifier, index, appartment.prices["rentPrice"], true)
+    local newAppartment = class:new(currId + 1, identifier, index, appartment.prices["rentPrice"], true)
     currId = currId + 1
 
-    newAppartment:buy(xPlayer.identifier, true)
+    newAppartment:buy(identifier, true)
 
     if not appartmentRegistry[currId] then
         appartmentRegistry[currId] = {}
@@ -186,15 +187,15 @@ lib.callback.register('lm-appartments:rentAppartment', function (source, data)
 
     appartmentRegistry[currId][index] = newAppartment
 
-    if not appartmentsFromOwner[xPlayer.identifier] then
-        appartmentsFromOwner[xPlayer.identifier] = {}
+    if not appartmentsFromOwner[identifier] then
+        appartmentsFromOwner[identifier] = {}
     end
 
-    if not appartmentsFromOwner[xPlayer.identifier][index] then
-        appartmentsFromOwner[xPlayer.identifier][index] = {}
+    if not appartmentsFromOwner[identifier][index] then
+        appartmentsFromOwner[identifier][index] = {}
     end
 
-    appartmentsFromOwner[xPlayer.identifier][index] = newAppartment
+    appartmentsFromOwner[identifier][index] = newAppartment
 
     Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
         ("%s:%s"):format(newAppartment.name, newAppartment.owner),
@@ -211,7 +212,8 @@ end)
 
 lib.callback.register('lm-appartments:buyAppartment', function (source, data)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
+    local player = Framework.GetPlayer(src)
+    local identifier = Framework.GetPlayerIdentifier(player)
 
     if not data or not data.index then
         return
@@ -237,10 +239,10 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
 
     Framework.RemoveMoney(src, 'bank', appartmentData.prices["buyPrice"])
 
-    local newAppartment = class:new(currId + 1, xPlayer.identifier, data.index, 0, false)
+    local newAppartment = class:new(currId + 1, identifier, data.index, 0, false)
     currId = currId + 1
 
-    newAppartment:buy(xPlayer.identifier)
+    newAppartment:buy(identifier)
 
     if not appartmentRegistry[currId] then
         appartmentRegistry[currId] = {}
@@ -248,17 +250,17 @@ lib.callback.register('lm-appartments:buyAppartment', function (source, data)
 
     appartmentRegistry[currId][data.index] = newAppartment
 
-    if not appartmentsFromOwner[xPlayer.identifier] then
-        appartmentsFromOwner[xPlayer.identifier] = {}
+    if not appartmentsFromOwner[identifier] then
+        appartmentsFromOwner[identifier] = {}
     end
 
-    if not appartmentsFromOwner[xPlayer.identifier][data.index] then
-        appartmentsFromOwner[xPlayer.identifier][data.index] = {}
+    if not appartmentsFromOwner[identifier][data.index] then
+        appartmentsFromOwner[identifier][data.index] = {}
     end
 
-    appartmentsFromOwner[xPlayer.identifier][data.index] = newAppartment
+    appartmentsFromOwner[identifier][data.index] = newAppartment
 
-    
+
     Appartments.Stashes[#Appartments.Stashes+1] = exports.ox_inventory:RegisterStash(
         ("%s:%s"):format(newAppartment.name, newAppartment.owner),
         ("%s"):format(Config.Appartments[newAppartment.name].label),
@@ -274,10 +276,11 @@ end)
 
 lib.callback.register('lm-appartments:fetchAppartments', function (source)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
+    local player = Framework.GetPlayer(src)
+    local identifier = Framework.GetPlayerIdentifier(player)
 
-    if appartmentsFromOwner[xPlayer.identifier] and appartmentsFromOwner[xPlayer.identifier][id] then
-        return appartmentsFromOwner[xPlayer.identifier][id].rent and 'rent' or true or false
+    if appartmentsFromOwner[identifier] and appartmentsFromOwner[identifier][id] then
+        return appartmentsFromOwner[identifier][id].rent and 'rent' or true or false
     end
 
     return false
@@ -285,10 +288,11 @@ end)
 
 lib.callback.register('lm-appartments:isOwnerFromAppartment', function (source, id)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
+    local player = Framework.GetPlayer(src)
+    local identifier = Framework.GetPlayerIdentifier(player)
 
-    if appartmentsFromOwner[xPlayer.identifier] and appartmentsFromOwner[xPlayer.identifier][id] then
-        return appartmentsFromOwner[xPlayer.identifier][id].rent and 'rent' or true or false
+    if appartmentsFromOwner[identifier] and appartmentsFromOwner[identifier][id] then
+        return appartmentsFromOwner[identifier][id].rent and 'rent' or true or false
     end
 end)
 
@@ -307,15 +311,16 @@ end)
 
 lib.callback.register('lm-appartments:fetchClothing', function (source, index)
     local src = source
-    local xPlayer = Framework.GetPlayer(src)
+    local player = Framework.GetPlayer(src)
+    local identifier = Framework.GetPlayerIdentifier(player)
     local data = {}
 
     if Config.ClothingResource == "illenium-appearance" then
         local response = MySQL.query.await('SELECT * FROM `player_outfits` WHERE `citizenid` = ?', {
-            xPlayer.identifier
+            identifier
         })
 
-        for i = 1, #response do        
+        for i = 1, #response do
             data[#data + 1] = {
                 label = response[i].outfitname,
                 appearance = {
@@ -324,17 +329,17 @@ lib.callback.register('lm-appartments:fetchClothing', function (source, index)
                     components = json.decode(response[i].components)
                 }
             }
-        end  
+        end
     elseif Config.ClothingResource == 'ox_appearance' or Config.ClothingResource == 'esx_skin' then
         local response = MySQL.query.await('SELECT * FROM `outfits` WHERE `owner` = ?', {
-            xPlayer.identifier
+            identifier
         })
 
         data[#data + 1] = {
             label = response[i].outfitname,
             appearance = {
-                model = response[i].outfitModel, 
-                props = json.decode(response[i].outfitProps), 
+                model = response[i].outfitModel,
+                props = json.decode(response[i].outfitProps),
                 components = json.decode(response[i].outfitComponents)
             }
         }
@@ -360,28 +365,30 @@ end)
 -- lib.cron.new("0 12 * * *", function()
 CreateThread(function()
     local users = MySQL.query.await("SELECT `owner` FROM `owned_appartments` WHERE `rent` = 1")
-    
+
     if not users then return end
 
     for i = 1, #users do
-        local xPlayer = Framework.GetPlayerFromIdentifier(users[i].owner)
-        if not xPlayer then goto continue end
+        local player = Framework.GetPlayerFromIdentifier(users[i].owner)
+        if not player then goto continue end
 
-        local ownedAppartments = appartmentsFromOwner[xPlayer.identifier]
+        local identifier = Framework.GetPlayerIdentifier(player)
+
+        local ownedAppartments = appartmentsFromOwner[identifier]
         if not ownedAppartments then goto continue end
 
         for _, appartment in pairs(ownedAppartments) do
             if appartment.rent == 0 then goto continue end
 
-            if Framework.HasMoney(xPlayer.source, 'bank', appartment.price) then
-                Framework.RemoveMoney(xPlayer.source, 'bank', appartment.price)
+            if Framework.HasMoney(player.source, 'bank', appartment.price) then
+                Framework.RemoveMoney(player.source, 'bank', appartment.price)
             else
-                appartment:sell(xPlayer.identifier)
+                appartment:sell(identifier)
 
                 appartmentRegistry[appartment.id][appartment.name] = nil
-                appartmentsFromOwner[xPlayer.identifier][appartment.name] = nil
+                appartmentsFromOwner[identifier][appartment.name] = nil
 
-                lib.notify(xPlayer.source, { title = locale("RENT_EXPIRED", Config.Appartments[appartment.name].label), type = 'error', position = 'top' })
+                lib.notify(player.source, { title = locale("RENT_EXPIRED", Config.Appartments[appartment.name].label), type = 'error', position = 'top' })
             end
 
             ::continue::

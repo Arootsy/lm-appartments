@@ -3,23 +3,20 @@ if not Framework.Ox() then return end
 local Ox = require '@ox_core.lib.init'
 
 function Framework.GetPlayer(src)
-    local Player = Ox.GetPlayer(src)
-
-    if Player then
-        return Player
-    end
+    return Ox.GetPlayer(src)
 end
 
-function Framework.GetPlayerFromIdentifier(identifier)
-    local Player = Ox.GetPlayerFromFilter({ identifier = identifier })
+function Framework.GetPlayerFromIdentifier(charId)
+    return Ox.GetPlayerFromFilter({ charId = charId })
+end
 
-    if Player then
-        return Player
-    end
+function Framework.GetPlayerIdentifier(player)
+    return player.charId
 end
 
 function Framework.HasMoney(src, _, amount)
-    return exports.ox_inventory:GetItemCount(src, 'money') >= amount, exports.ox_inventory:GetItemCount(src, 'money') - amount
+    local count = exports.ox_inventory:GetItemCount(src, 'money')
+    return count >= amount, count - amount
 end
 
 function Framework.RemoveMoney(src, _, amount)
@@ -31,5 +28,5 @@ function Framework.AddMoney(src, _, amount)
 end
 
 lib.callback.register('lm-appartments:framework:GetIdentifier', function(src)
-    return Ox.GetPlayer(src).identifier
+    return Ox.GetPlayer(src).charId
 end)

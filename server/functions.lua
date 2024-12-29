@@ -1,4 +1,3 @@
-local Config <const> = require "shared.config"
 while not Appartments do Wait(0) end
 
 ---@param model number|string
