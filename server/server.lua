@@ -362,23 +362,22 @@ AddEventHandler('onResourceStop', function (resource)
     end
 end)
 
--- lib.cron.new("0 12 * * *", function()
-CreateThread(function()
+lib.cron.new("0 12 * * *", function()
     local users = MySQL.query.await("SELECT `owner` FROM `owned_appartments` WHERE `rent` = 1")
 
     if not users then return end
 
     for i = 1, #users do
         local player = Framework.GetPlayerFromIdentifier(users[i].owner)
-        if not player then goto continue end
+        if not player then return end
 
         local identifier = Framework.GetPlayerIdentifier(player)
 
         local ownedAppartments = appartmentsFromOwner[identifier]
-        if not ownedAppartments then goto continue end
+        if not ownedAppartments then return end
 
         for _, appartment in pairs(ownedAppartments) do
-            if appartment.rent == 0 then goto continue end
+            if appartment.rent == 0 then return end
 
             if Framework.HasMoney(player.source, 'bank', appartment.price) then
                 Framework.RemoveMoney(player.source, 'bank', appartment.price)
@@ -390,9 +389,6 @@ CreateThread(function()
 
                 lib.notify(player.source, { title = locale("RENT_EXPIRED", Config.Appartments[appartment.name].label), type = 'error', position = 'top' })
             end
-
-            ::continue::
         end
-        ::continue::
     end
 end)
