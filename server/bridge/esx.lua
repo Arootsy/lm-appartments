@@ -11,7 +11,7 @@ function Framework.GetPlayerFromIdentifier(identifier)
 end
 
 function Framework.GetPlayerIdentifier(xPlayer)
-    return xPlayer.identifier
+    return xPlayer?.identifier
 end
 
 function Framework.HasMoney(src, type, money)

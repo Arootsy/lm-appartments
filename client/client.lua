@@ -122,6 +122,7 @@ end
 
 lib.callback.register('lm-appartments:enterAppartment', function (index, data)
     Appartments:DoScreenFade()
+    SetResourceKvp('inAppartment', index)
 
     while IsScreenFadingOut() do
         Wait(0)
@@ -155,6 +156,10 @@ end)
 
 RegisterNetEvent(Framework.OnPlayerLoaded, function ()
     Appartments:LoadAppartmentZones()
+
+    if GetResourceKvpString('inAppartment') then
+        TriggerServerEvent('lm-appartments:server:enterAppartment', { index = GetResourceKvpString('inAppartment') })
+    end
 end)
 
 RegisterNetEvent('lm-appartments:client:removeAppartment', function (index)

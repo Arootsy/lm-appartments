@@ -1,3 +1,6 @@
+
+lib.locale();
+
 -- credit http://richard.warburton.it
 function GroupDigits(value)
     local left, num, right = string.match(value, "^([^%d]*%d)(%d*)(.-)$")
