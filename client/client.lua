@@ -122,6 +122,7 @@ end
 
 lib.callback.register('lm-appartments:enterAppartment', function (index, data)
     Appartments:DoScreenFade()
+    DisplayRadar(false)
     SetResourceKvp('inAppartment', index)
 
     while IsScreenFadingOut() do

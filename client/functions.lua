@@ -11,6 +11,7 @@ function Appartments:Exit(index)
 
     lib.callback.await('lm-appartments:exitAppartment', false, index)
     lib.hideTextUI()
+    DisplayRadar(true)
     DeleteResourceKvp('inAppartment')
 
     for i = 1, #Appartments.Zones do
