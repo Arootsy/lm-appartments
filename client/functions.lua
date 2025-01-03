@@ -48,6 +48,8 @@ function Appartments:Clothing(index)
                         exports["illenium-appearance"]:setPedProps(cache.ped, data[i].appearance.props)
 
                         TriggerServerEvent("illenium-appearance:server:saveAppearance", exports["illenium-appearance"]:getPedAppearance(cache.ped))
+
+                        lib.notify({ title = locale("OUTFIT_CHANGE_SUCCESS", data[i].label), position = 'top', type = 'success'})
                     end
                 else
                     lib.notify({ title = locale("OUTFIT_CHANGE_FAILED"), position = 'top', type = 'error'}) 

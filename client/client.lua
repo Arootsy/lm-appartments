@@ -1,5 +1,4 @@
 -- // [ IMPORTS ] \\ --
-lib.locale()
 local Config   <const> = require "shared.config"
 
 -- // [ VARIABLES ] \\ --
@@ -9,6 +8,9 @@ OwnedAppartments = lib.callback.await('lm-appartments:fetchAppartments', false)
 
 function Appartments:CreateBlips(appName, appData)
     local isOwner = lib.callback.await('lm-appartments:isOwnerFromAppartment', false, appName)
+
+    if Appartments.Blips[appName] then RemoveBlip(Appartments.Blips[appName]) end;
+
     Appartments.Blips[appName] = AddBlipForCoord(appData.enterCoords)
 
     SetBlipSprite(Appartments.Blips[appName], isOwner and 40 or 350)
@@ -80,7 +82,6 @@ function Appartments:Interact(action, index)
 end
 
 function Appartments:LoadAppartment(index, data)
-
     Appartments.Zones[#Appartments.Zones+1] = lib.zones.sphere({
         coords = data.appartmentCoords,
         radius = 50,

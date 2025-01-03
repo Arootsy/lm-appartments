@@ -2,7 +2,6 @@
 
 local Config <const> = require "shared.config"
 local class = require 'server.class.appartmentClass';
-lib.locale();
 
 -- // [ VARIABLES ] \\ --
 
@@ -15,7 +14,11 @@ Appartments = { Objects = {}, Stashes = {} }
 local currId = 0;
 (function ()
     CreateThread(function ()
-        while not MySQL do Wait(0) end;
+        local success = lib.waitFor(function ()
+            return MySQL.ready
+        end)
+
+        if not success then return end;
 
         local resp = MySQL.query.await("SELECT `id`, `owner`, `name`, `price`, `rent` FROM `owned_appartments`")
 

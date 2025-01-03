@@ -29,5 +29,6 @@
     "CONFIRM_BUY_SELL_APPARTMENT_CHECKBOX": "Ik bevestig dat ik volledig begrijp wat deze verkoop inhoudt en dat ik zeker ben van mijn beslissing.",
     "CONFIRM_CANCELRENT_APPARTMENT": "Wil je de huur opzeggen voor: %s?",
     "CONFIRM_CANCELRENT_APPARTMENT_CHECKBOX": "Ik bevestig dat ik volledig begrijp wat deze annulering inhoudt en dat ik zeker ben van mijn beslissing.",
-    "CANCELRENT_APPARTMENT": "Je hebt de huur opgezegd voor: %s"
+    "CANCELRENT_APPARTMENT": "Je hebt de huur opgezegd voor: %s",
+    "OUTFIT_CHANGE_SUCCESS": "Je hebt je outfit gewijzigd naar %s"
 }
