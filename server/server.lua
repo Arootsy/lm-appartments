@@ -75,11 +75,12 @@ function Appartments:InitializeAppartment(source, index)
         if not DoesEntityExist(entity) then lib.print.warn(("Entity doesn't exist (model: %s)"):format(model)) return end
 
         local entityCoords = GetEntityCoords(entity)
+        local entityHeading = GetEntityHeading(entity)
         local interactions = {}
 
         for action, data in pairs(offsetData.interactions) do
             local offset = data.offset
-            interactions[#interactions+1] = { icon = data.icon, action = action, coords = vec3(entityCoords.x + offset.x, entityCoords.y + offset.y, entityCoords.z + offset.z) }
+            interactions[#interactions+1] = { icon = data.icon, action = action, coords = { x = entityCoords.x + offset.x, y = entityCoords.y + offset.y, z = entityCoords.z + offset.z, h = entityHeading + offset.h } }
         end
 
         lib.callback.await('lm-appartments:enterAppartment', src, index, {
@@ -93,6 +94,7 @@ function Appartments:InitializeAppartment(source, index)
         local exitOffset = offsetData.interactions.exit.offset
 
         SetEntityCoords(ped, entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z)
+        SetEntityHeading(ped, entityHeading + exitOffset.h)
 
         Appartments.Objects[#Appartments.Objects + 1] = { entity = entity, coords = entityCoords }
     end)
@@ -303,6 +305,7 @@ lib.callback.register('lm-appartments:exitAppartment', function (source, index)
     local src = source
 
     SetEntityCoords(GetPlayerPed(src), Config.Appartments[index].enterCoords)
+    SetEntityHeading(GetPlayerPed(src), Config.Appartments[index].enterHeading)
     SetPlayerRoutingBucket(src, 0)
 
     for i = 1, #Appartments.Objects do

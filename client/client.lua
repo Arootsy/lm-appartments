@@ -46,7 +46,7 @@ function Appartments:LoadAppartmentZones()
                 openAppartmentMenu(appName)
             end
 
-            DrawMarker(2, self.coords.x, self.coords.y, self.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 0, 225, 0, 222, false, false, false, true, false, false, false)
+            DrawMarker(2, self.coords.x, self.coords.y, self.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, appData.enterHeading, 0.3, 0.2, 0.15, 0, 225, 0, 222, false, false, false, false, false, false, false)
         end
     end
 end
@@ -90,10 +90,16 @@ function Appartments:LoadAppartment(index, data)
             for i = 1, #data.interactions do
                 local interaction = data.interactions[i]
 
-                DrawMarker(2, interaction.coords, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, Config.InteractionColors[interaction.action].r, Config.InteractionColors[interaction.action].g, Config.InteractionColors[interaction.action].b, 222, false, false, false, true, false, false, false)
+                DrawMarker(2, interaction.coords.x, interaction.coords.y, interaction.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, interaction.coords.h, 0.3, 0.2, 0.15, Config.InteractionColors[interaction.action].r, Config.InteractionColors[interaction.action].g, Config.InteractionColors[interaction.action].b, 222, false, false, false, false, false, false, false)
             end
         end,
     })
+
+    lib.waitFor(function ()
+        local playerCoords = GetEntityCoords(cache.ped)
+
+        return #(playerCoords - data.appartmentCoords) <= 5
+    end)
 
     for i = 1, #data.interactions do
         local interaction = data.interactions[i]
