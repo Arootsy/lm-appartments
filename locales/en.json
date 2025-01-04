@@ -30,5 +30,6 @@
     "CONFIRM_CANCELRENT_APPARTMENT": "Do you want to cancel the rent for: %s?",
     "CONFIRM_CANCELRENT_APPARTMENT_CHECKBOX": "I confirm that I fully understand and acknowledge the implications of this cancellation and that I am proceeding with certainty.",
     "CANCELRENT_APPARTMENT": "You canceled the rent for: %s",
-    "OUTFIT_CHANGE_SUCCESS": "You changed your outfit to %s"
+    "OUTFIT_CHANGE_SUCCESS": "You changed your outfit to %s",
+    "CHECKBOX_FAILED": "You must confirm that you fully understand and acknowledge the implications of this action and that you are proceeding with certainty."
 }
