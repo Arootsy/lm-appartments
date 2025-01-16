@@ -17,6 +17,16 @@ function Appartments:Exit(index)
     for i = 1, #Appartments.Zones do
         Appartments.Zones[i]:remove()
     end
+
+    SetGameplayCamRelativeHeading(GetEntityCoords(cache.ped))
+    SetGameplayCamRelativePitch(0.0, 1.0)
+
+    if Config.InteractionType == 'target' then
+        for i = 1, #Appartments.Targets do
+            local id = Appartments.Targets[i]
+            exports.ox_target:removeZone(id)
+        end
+    end
 end
 
 function Appartments:Clothing(index)

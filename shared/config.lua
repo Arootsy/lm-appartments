@@ -2,6 +2,8 @@ local Config = {}
 
 Config.Debug = false
 
+Config.InteractionType = 'target/textUI' -- OPTIONS: [ target, textUI or target/textUI ]
+
 Config.Appartments = {
     ["SchlongbergSachs"] = {
         label = 'Schlongberg Sachs',

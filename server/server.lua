@@ -18,7 +18,7 @@ local currId = 0;
             return MySQL.ready
         end)
 
-        if not success then return end;
+        if not success then lib.print.error('MySQL is not ready. Please ensure the database is properly configured and running') return end;
 
         local resp = MySQL.query.await("SELECT `id`, `owner`, `name`, `price`, `rent` FROM `owned_appartments`")
 

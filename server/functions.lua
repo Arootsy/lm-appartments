@@ -1,5 +1,3 @@
--- while not Appartments do Wait(0) end
-
 lib.waitFor(function () return Appartments end)
 
 ---@param model number|string
