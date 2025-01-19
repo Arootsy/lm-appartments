@@ -17,4 +17,9 @@ To use this resource, ensure your server has the following dependencies installe
 - **[ox_inventory](https://github.com/overextended/ox_inventory)**: Version 2.5.0 or newer
 - **[ox_lib](https://github.com/overextended/ox_lib)**: Version 3.27.0 or newer
 - **[illenium-appearance](https://github.com/iLLeniumStudios/illenium-appearance)**: Version 5.1.0 or newer
+- **[Lynxx Shells](https://github.com/Lynxist/lynx_shells)**: Required for apartment interiors.
+
+### Additional Requirements
 - **[ESX Framework](https://github.com/esx-framework/esx_core/tree/main/%5Bcore%5D/es_extended)**: Version 1.9.0 or newer
+- **[Qbox Framework](https://github.com/Qbox-project/qbx_core)**
+- **[OX Framework](https://github.com/overextended/ox_core)**
