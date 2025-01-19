@@ -23,3 +23,5 @@ To use this resource, ensure your server has the following dependencies installe
 - **[ESX Framework](https://github.com/esx-framework/esx_core/tree/main/%5Bcore%5D/es_extended)**: Version 1.9.0 or newer
 - **[Qbox Framework](https://github.com/Qbox-project/qbx_core)**
 - **[OX Framework](https://github.com/overextended/ox_core)**
+
+For any issues or questions, feel free to join our [Discord](https://discord.gg/RbSVrGBA9t) community for support and updates.
