@@ -9,7 +9,7 @@ function Appartments:CreateObject(model, coords, heading, cb)
         model = joaat(model)
     end
     local objectCoords = type(coords) == "vector3" and coords or vector3(coords.x, coords.y, coords.z)
-    CreateThread(function()
+    -- CreateThread(function()
         local entity = CreateObject(model, objectCoords.x, objectCoords.y, objectCoords.z, true, true, false)
 
         local success = lib.waitFor(function ()
@@ -20,5 +20,5 @@ function Appartments:CreateObject(model, coords, heading, cb)
 
         SetEntityHeading(entity, heading)
         cb(NetworkGetNetworkIdFromEntity(entity))
-    end)
+    -- end)
 end
