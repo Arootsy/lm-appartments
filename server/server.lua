@@ -96,7 +96,7 @@ function Appartments:InitializeAppartment(source, index)
         SetEntityCoords(ped, entityCoords.x + exitOffset.x, entityCoords.y + exitOffset.y, entityCoords.z + exitOffset.z)
         SetEntityHeading(ped, entityHeading + exitOffset.h)
 
-        Appartments.Objects[#Appartments.Objects + 1] = { entity = entity, coords = entityCoords }
+        Appartments.Objects[src] = { entity = entity, coords = entityCoords }
     end)
 end
 
@@ -307,11 +307,8 @@ lib.callback.register('lm-appartments:exitAppartment', function (source, index)
     SetEntityCoords(GetPlayerPed(src), Config.Appartments[index].enterCoords)
     SetEntityHeading(GetPlayerPed(src), Config.Appartments[index].enterHeading)
     SetPlayerRoutingBucket(src, 0)
-
-    for i = 1, #Appartments.Objects do
-        if DoesEntityExist(Appartments.Objects[i].entity) then
-            DeleteEntity(Appartments.Objects[i].entity)
-        end
+    if DoesEntityExist(Appartments.Objects[src].entity) then
+        DeleteEntity(Appartments.Objects[src].entity)
     end
 end)
 
