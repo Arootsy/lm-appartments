@@ -129,10 +129,7 @@ function Appartments:LoadAppartment(index, data)
                 radius = 1.5,
                 debug = Config.Debug,
                 onEnter = function ()
-                    lib.showTextUI({
-                        label = locale('PRESS_E_TO'):format(locale(('INTERACT_%s'):format(interaction.action:upper()))),
-                        icon = interaction.icon
-                    })
+                    lib.showTextUI(locale('PRESS_E_TO'):format(locale(('INTERACT_%s'):format(interaction.action:upper()))), {icon = interaction.icon})
                 end,
                 inside = function ()
                     if IsControlJustReleased(0, 38) then
